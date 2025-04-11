@@ -1,0 +1,110 @@
+.loader-18 {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: inline-block;
+    border-top: 4px solid #0166aa;
+    border-right: 4px solid transparent;
+    animation: rotation 1s linear infinite;
+}
+.dark .loader-18 {
+    border-top: 4px solid #0166aa;
+}
+.loader-18:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border-bottom: 4px solid #0166aa;
+    border-left: 4px solid transparent;
+}
+.dark .loader-18:after {
+    border-bottom: 4px solid #0166aa;
+}
+.loader-95 {
+    width: 48px;
+    height: 48px;
+    display: inline-block;
+    position: relative;
+}
+.loader-95::after {
+    content: '';
+    width: 48px;
+    height: 48px;
+    left: 0;
+    bottom: 0;
+    position: absolute;
+    border-radius: 50% 50% 0;
+    border: 15px solid #fff;
+    transform: rotate(45deg) translate(0, 0);
+    animation: animMarker 0.4s ease-in-out infinite alternate;
+}
+.loader-95::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: auto;
+    top: 150%;
+    width: 24px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.2);
+    background: #fff;
+    animation: animShadow 0.4s ease-in-out infinite alternate;
+}
+
+.loader::after, .loader::before {
+    animation: loader 2s linear infinite;
+    content: "";
+    border: 4px solid #fff;
+    width: 108px;
+    height: 108px;
+    position: absolute;
+    border-radius: 50%;
+}
+.loader::after {
+    opacity: 0;
+    animation-delay: 1s;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+   }
+    100% {
+        transform: rotate(360deg);
+   }
+}
+
+@keyframes animMarker {
+    0% {
+        transform: rotate(45deg) translate(5px, 5px);
+   }
+    100% {
+        transform: rotate(45deg) translate(-5px, -5px);
+   }
+}
+
+@keyframes animShadow {
+    0% {
+        transform: scale(0.5);
+   }
+    100% {
+        transform: scale(1);
+   }
+}
+
+@keyframes loader {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}

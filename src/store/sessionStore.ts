@@ -1,18 +1,18 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type Profile = {
+export type Profile = {
   role: string;
 };
 
-type User = {
+export type User = {
   id: string;
   aud: string;
   email: string | undefined;
   created_at: string;
 };
 
-type Session = {
+export type Session = {
   access_token: string;
   expires_at: number | undefined;
   expires_in: number;
