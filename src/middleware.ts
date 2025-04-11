@@ -5,8 +5,6 @@ export async function middleware(request: NextRequest) {
   try {
     const session = getCurrentSession(request);
 
-    console.log("Middleware - Sesion:", session);
-
     // Si no hay sesión y el usuario intenta acceder al dashboard, redirige al login
     if (!session && request.nextUrl.pathname.startsWith("/dashboard")) {
       return NextResponse.redirect(new URL("/", request.url));
