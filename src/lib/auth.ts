@@ -5,6 +5,7 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import { toast } from "sonner";
 import { Profile, Session, User } from "@/store/sessionStore";
 
+// Función para iniciar sesión en Supabase
 export async function loginUser(
   setLoading: (loading: boolean) => void,
   email: string,
@@ -27,20 +28,34 @@ export async function loginUser(
   }
 
   if (data.session) {
-    // Obtener el perfil desde la tabla 'profiles'
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
+    // Obtener el usuario desde la tabla 'users' en Supabase
+    const { data: user, error: userError } = await supabase
+      .from("users")
       .select("*")
       .eq("id", data.session.user.id)
       .single();
+    console.log("data.session.user.id ", data.session.user.id);
+    if (userError) {
+      console.error("Error al obtener el usuario:", userError);
+      toast("Error al obtener el perfil del usuario");
+      setLoading(false);
+      return;
+    }
+    console.log("User_ ", { user });
+    // Obtener el role desde la tabla 'profiles' en Supabase
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user?.profile_id)
+      .single();
 
     if (profileError) {
-      console.error("Error al obtener el perfil:", profileError);
+      console.error("Error al obtener el role:", profileError);
       toast("Error al cargar el perfil del usuario");
       setLoading(false);
       return;
     }
-
+    console.log("Profile_ ", { profile });
     document.cookie = `token=${data.session.access_token}; path=/; max-age=3600; secure; SameSite=Lax`;
 
     setSession({
@@ -51,19 +66,21 @@ export async function loginUser(
       token_type: data.session.token_type,
     });
     setUser({
-      id: data.session.user.id,
+      id: user.id,
       aud: data.session.user.aud,
-      email: data.session.user.email,
+      full_name: user.full_name,
+      email: user.email,
       created_at: data.session.user.created_at,
     });
     setProfile({
-      role: profile?.role,
+      role: profile?.name,
     });
-    router.push("/dashboard");
+    router.push("/requests");
     setLoading(false);
   }
 }
 
+// Función para registrar un usuario en Supabase
 export function getCurrentSession(request: NextRequest) {
   // Obtener las cookies de la solicitud
   const cookieHeader = request.headers.get("cookie");
@@ -84,6 +101,7 @@ export function getCurrentSession(request: NextRequest) {
   return { access_token: token };
 }
 
+// Función para cerrar sesión en Supabase
 export async function signOutUser(
   setLoading: (loading: boolean) => void,
   router: AppRouterInstance,

@@ -6,13 +6,13 @@ export async function middleware(request: NextRequest) {
     const session = getCurrentSession(request);
 
     // Si no hay sesión y el usuario intenta acceder al dashboard, redirige al login
-    if (!session && request.nextUrl.pathname.startsWith("/dashboard")) {
+    if (!session && request.nextUrl.pathname.startsWith("/requests")) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
     // Si hay sesión y el usuario está en la página de login, redirige al dashboard
     if (session && request.nextUrl.pathname === "/") {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(new URL("/requests", request.url));
     }
   } catch (error) {
     console.error("Error en middleware:", error);
@@ -23,5 +23,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/"],
+  matcher: ["/requests/:path*", "/"],
 };

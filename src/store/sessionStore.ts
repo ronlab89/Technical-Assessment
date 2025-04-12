@@ -8,6 +8,7 @@ export type Profile = {
 export type User = {
   id: string;
   aud: string;
+  full_name: string;
   email: string | undefined;
   created_at: string;
 };

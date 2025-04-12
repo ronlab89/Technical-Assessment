@@ -12,6 +12,7 @@ export default function Home() {
             width={40}
             height={40}
             className="w-[40px] h-auto"
+            loading="eager"
           />
           <h1 className="text-2xl font-bold">Prueba tecnica</h1>
         </article>
