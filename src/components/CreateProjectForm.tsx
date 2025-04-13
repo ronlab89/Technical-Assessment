@@ -18,6 +18,7 @@ import { useState } from "react";
 import { useSessionStore } from "@/store/sessionStore";
 import { createProjectWithFiles } from "@/lib/request";
 import { toast } from "sonner";
+import { useRequestStore } from "@/store/requestStore";
 
 // Esquema de validación con Zod
 const formSchema = z.object({
@@ -31,6 +32,9 @@ const formSchema = z.object({
 
 export default function CreateProjectForm() {
   const user = useSessionStore((state) => state.user);
+  const requests = useRequestStore((state) => state.requests);
+  const setRequests = useRequestStore((state) => state.setRequests);
+
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -54,8 +58,13 @@ export default function CreateProjectForm() {
         files,
       });
       console.log("createdProject", createdProject);
-    } catch (error: any) {
-      toast.error(error.message || "Error al crear proyecto");
+      setRequests([...(requests || []), createdProject]);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message || "Error al crear proyecto");
+      } else {
+        toast.error("Error al crear proyecto");
+      }
     } finally {
       setLoading(false);
     }
@@ -118,7 +127,11 @@ export default function CreateProjectForm() {
         </FormItem>
 
         {/* Botón de Envío */}
-        <Button type="submit" disabled={loading} className="w-full">
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full cursor-pointer"
+        >
           {loading ? "Creando..." : "Crear Proyecto"}
         </Button>
       </form>

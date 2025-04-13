@@ -17,7 +17,7 @@ import { useSessionStore } from "@/store/sessionStore";
 import { useEffect, useState } from "react";
 import { useRequestStore } from "@/store/requestStore";
 import Loader from "@/components/Loader";
-import { getAllUsers } from "@/lib/users";
+import { getAllDesigners } from "@/lib/users";
 import { useUserStore } from "@/store/usersStore";
 
 const Page = () => {
@@ -25,6 +25,9 @@ const Page = () => {
   const user = useSessionStore((state) => state.user);
   const setRequests = useRequestStore((state) => state.setRequests);
   const requests = useRequestStore((state) => state.requests);
+  const setSelectedDesignerId = useRequestStore(
+    (state) => state.setSelectedDesignerId
+  );
   const setUsers = useUserStore((state) => state.setUsers);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -38,13 +41,28 @@ const Page = () => {
   };
 
   const getUsers = async () => {
-    await getAllUsers({ setLoading, setUsers });
+    await getAllDesigners({ setLoading, setUsers });
   };
 
   useEffect(() => {
     getRequest();
     if (profile?.role === "pm") getUsers();
   }, []);
+
+  useEffect(() => {
+    if (!requests || requests.length === 0) return;
+
+    const assigned = requests
+      .filter((project) => project.designer_id !== null)
+      .map((project) => ({
+        projectId: project.id,
+        designerId: project.designer_id,
+      }));
+
+    assigned.forEach(({ projectId, designerId }) => {
+      setSelectedDesignerId(projectId, designerId);
+    });
+  }, [requests]);
 
   return (
     <section className="flex w-[81.5vw] min-h-screen flex-col items-start justify-start relative px-[40px]">

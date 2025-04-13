@@ -28,7 +28,9 @@ const getAllRequests = async ({
     if (profile === "pm") {
       const { data: projects, error } = await supabase
         .from("projects")
-        .select("*");
+        .select(
+          `*, client:client_id (id, full_name, email), designer:designer_id (id, full_name, email)`
+        );
 
       if (error) {
         console.error("Error al obtener los proyectos:", error);
@@ -44,7 +46,9 @@ const getAllRequests = async ({
     if (profile === "client") {
       const { data: projects, error } = await supabase
         .from("projects")
-        .select("*")
+        .select(
+          `*, client:client_id (id, full_name, email), designer:designer_id (id, full_name, email)`
+        )
         .eq("client_id", sessionId);
 
       if (error) {
@@ -61,7 +65,9 @@ const getAllRequests = async ({
     if (profile === "designer") {
       const { data: projects, error } = await supabase
         .from("projects")
-        .select("*")
+        .select(
+          `*, client:client_id (id, full_name, email), designer:designer_id (id, full_name, email)`
+        )
         .eq("designer_id", sessionId);
 
       if (error) {
@@ -87,24 +93,11 @@ const createProjectWithFiles = async ({
   clientId,
   files,
 }: CreateProjectParams) => {
-  // Primero creamos el proyecto sin archivos
-  const { data: project, error: createError } = await supabase
-    .from("projects")
-    .insert([{ title, description, client_id: clientId }])
-    .select()
-    .single();
-
-  if (createError) {
-    console.log("Error al crear el proyecto: ", createError);
-    toast.error("Error al crear el proyecto");
-    return;
-  }
-
-  const projectId = project.id;
+  // Subimos los archivos al storage
   const uploadedFiles = [];
 
   for (const file of files) {
-    const filePath = `${projectId}/${Date.now()}_${file.name}`;
+    const filePath = `${Date.now()}_${file.name}`;
 
     const { error: uploadError } = await supabase.storage
       .from("project-files")
@@ -123,20 +116,20 @@ const createProjectWithFiles = async ({
     });
   }
   console.log("uploadedFiles", uploadedFiles);
-  // Actualizamos el proyecto con los archivos subidos
-  const { error: updateError } = await supabase
-    .from("projects")
-    .update({ files: uploadedFiles })
-    .eq("id", projectId);
 
-  if (updateError) {
-    console.log(
-      "Error al actualizar el proyecto con los archivos: ",
-      updateError
-    );
-    toast.error("Error al actualizar el proyecto con los archivos");
+  //Creamos el proyecto con los archivos subidos
+  const { data: project, error: createError } = await supabase
+    .from("projects")
+    .insert([{ title, description, client_id: clientId, files: uploadedFiles }])
+    .select()
+    .single();
+
+  if (createError) {
+    console.log("Error al crear el proyecto: ", createError);
+    toast.error("Error al crear el proyecto");
     return;
   }
+
   toast.success("Proyecto creado con éxito");
 
   return {
@@ -145,4 +138,67 @@ const createProjectWithFiles = async ({
   };
 };
 
-export { getAllRequests, createProjectWithFiles };
+type AssignDesignerPayload = {
+  projectId: string;
+  designerId: string | null;
+};
+
+export const assignDesigner = async ({
+  projectId,
+  designerId,
+}: AssignDesignerPayload) => {
+  const { error: updateError } = await supabase
+    .from("projects")
+    .update({ designer_id: designerId, updated_at: new Date().toISOString() })
+    .eq("id", projectId)
+    .select();
+
+  if (updateError) return toast.error("Error al asignar el diseñador");
+  const { data: designerProject, error: designerError } = await supabase
+    .from("projects")
+    .select(
+      `*, client:client_id (id, full_name, email), designer:designer_id (id, full_name, email)`
+    )
+    .eq("id", projectId)
+    .single();
+  if (designerError) return toast.error("Error al obtener el proyecto");
+  if (designerProject.designer_id === null) {
+    toast.success("Diseñador removido");
+  } else {
+    toast.success("Diseñador asignado");
+  }
+  return designerProject;
+};
+
+const deleteProject = async (projectId: string) => {
+  // Obtener lista de archivos para borrar del storage
+  const { data: project, error: fetchError } = await supabase
+    .from("projects")
+    .select("files")
+    .eq("id", projectId)
+    .single();
+
+  if (fetchError) throw fetchError;
+
+  type FileObject = { path: string };
+  const filesToDelete =
+    project?.files?.map((file: FileObject) => file.path) || [];
+
+  const { error: storageError } = await supabase.storage
+    .from("project-files")
+    .remove(filesToDelete);
+
+  if (storageError) toast.error(storageError.message);
+
+  const { data: deletedProject, error: deleteError } = await supabase
+    .from("projects")
+    .delete()
+    .eq("id", projectId)
+    .select();
+
+  if (deleteError) return toast.error(deleteError.message);
+  toast.success("Proyecto eliminado con éxito");
+  return deletedProject;
+};
+
+export { getAllRequests, createProjectWithFiles, deleteProject };

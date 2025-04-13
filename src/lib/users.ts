@@ -2,7 +2,7 @@ import { User } from "@/store/usersStore";
 import { supabase } from "./supabase";
 import { toast } from "sonner";
 
-const getAllUsers = async ({
+const getAllDesigners = async ({
   setLoading,
   setUsers,
 }: {
@@ -34,4 +34,4 @@ const getAllUsers = async ({
   }
 };
 
-export { getAllUsers };
+export { getAllDesigners };
