@@ -1,37 +1,92 @@
+import { toast } from "sonner";
 import { supabase } from "./supabase";
+import { Request } from "@/store/requestStore";
 
 type FileInput = File[];
 
 type CreateProjectParams = {
   title: string;
   description: string;
-  userId: string;
+  clientId: string;
   files: FileInput;
 };
 
-const getAllRequests = async () => {
+const getAllRequests = async ({
+  setLoading,
+  setRequests,
+  profile,
+  sessionId,
+}: {
+  setLoading: (loading: boolean) => void;
+  setRequests: (data: Request[] | null) => void;
+  profile: string | undefined;
+  sessionId: string | undefined;
+}) => {
   try {
-    const { data, error } = await supabase.from("projects").select();
-    console.log("requests__", { data });
-    if (error) {
-      console.log(error);
-      return;
+    setLoading(true);
+    //PM
+    if (profile === "pm") {
+      const { data: projects, error } = await supabase
+        .from("projects")
+        .select("*");
+
+      if (error) {
+        console.error("Error al obtener los proyectos:", error);
+        toast.error("Error al obtener los proyectos");
+        setLoading(false);
+        return;
+      } else {
+        // console.log("Proyectos encontrados:", projects);
+        return setRequests(projects);
+      }
+    }
+    // Cliente
+    if (profile === "client") {
+      const { data: projects, error } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("client_id", sessionId);
+
+      if (error) {
+        console.error("Error al obtener los proyectos:", error);
+        toast.error("Error al obtener los proyectos");
+        setLoading(false);
+        return;
+      } else {
+        // console.log("Proyectos encontrados:", projects);
+        return setRequests(projects);
+      }
+    }
+    // Designer
+    if (profile === "designer") {
+      const { data: projects, error } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("designer_id", sessionId);
+
+      if (error) {
+        console.error("Error al obtener los proyectos:", error);
+        toast.error("Error al obtener los proyectos");
+        setLoading(false);
+        return;
+      } else {
+        // console.log("Proyectos encontrados:", projects);
+        return setRequests(projects);
+      }
     }
   } catch (error) {
     console.log(error);
+  } finally {
+    setLoading(false);
   }
 };
 
 const createProjectWithFiles = async ({
   title,
   description,
+  clientId,
   files,
 }: CreateProjectParams) => {
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError || !userData?.user) throw new Error("Usuario no autenticado");
-
-  const clientId = userData.user.id;
-
   // Primero creamos el proyecto sin archivos
   const { data: project, error: createError } = await supabase
     .from("projects")
@@ -39,7 +94,11 @@ const createProjectWithFiles = async ({
     .select()
     .single();
 
-  if (createError) throw createError;
+  if (createError) {
+    console.log("Error al crear el proyecto: ", createError);
+    toast.error("Error al crear el proyecto");
+    return;
+  }
 
   const projectId = project.id;
   const uploadedFiles = [];
@@ -48,13 +107,13 @@ const createProjectWithFiles = async ({
     const filePath = `${projectId}/${Date.now()}_${file.name}`;
 
     const { error: uploadError } = await supabase.storage
-      .from("project_files")
+      .from("project-files")
       .upload(filePath, file);
 
     if (uploadError) throw uploadError;
 
     const publicUrl = supabase.storage
-      .from("project_files")
+      .from("project-files")
       .getPublicUrl(filePath).data.publicUrl;
 
     uploadedFiles.push({
@@ -63,14 +122,22 @@ const createProjectWithFiles = async ({
       url: publicUrl,
     });
   }
-
+  console.log("uploadedFiles", uploadedFiles);
   // Actualizamos el proyecto con los archivos subidos
   const { error: updateError } = await supabase
     .from("projects")
     .update({ files: uploadedFiles })
     .eq("id", projectId);
 
-  if (updateError) throw updateError;
+  if (updateError) {
+    console.log(
+      "Error al actualizar el proyecto con los archivos: ",
+      updateError
+    );
+    toast.error("Error al actualizar el proyecto con los archivos");
+    return;
+  }
+  toast.success("Proyecto creado con éxito");
 
   return {
     ...project,

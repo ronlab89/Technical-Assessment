@@ -26,6 +26,7 @@ export async function loginUser(
     setLoading(false);
     return;
   }
+  // console.log("data.session.user.id ", { sessionId: data.session.user.id });
 
   if (data.session) {
     // Obtener el usuario desde la tabla 'users' en Supabase
@@ -33,21 +34,22 @@ export async function loginUser(
       .from("users")
       .select("*")
       .eq("id", data.session.user.id)
-      .single();
-    console.log("data.session.user.id ", data.session.user.id);
+      .maybeSingle();
+
     if (userError) {
       console.error("Error al obtener el usuario:", userError);
       toast("Error al obtener el perfil del usuario");
       setLoading(false);
       return;
     }
-    console.log("User_ ", { user });
+    // console.log("User_ ", { user });
+
     // Obtener el role desde la tabla 'profiles' en Supabase
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("*")
-      .eq("id", user?.profile_id)
-      .single();
+      .eq("id", user.profile_id)
+      .maybeSingle();
 
     if (profileError) {
       console.error("Error al obtener el role:", profileError);
@@ -55,7 +57,7 @@ export async function loginUser(
       setLoading(false);
       return;
     }
-    console.log("Profile_ ", { profile });
+    // console.log("Profile_ ", { profile });
     document.cookie = `token=${data.session.access_token}; path=/; max-age=3600; secure; SameSite=Lax`;
 
     setSession({
@@ -80,7 +82,7 @@ export async function loginUser(
   }
 }
 
-// Función para registrar un usuario en Supabase
+// Función para obtener la sesión actual del usuario
 export function getCurrentSession(request: NextRequest) {
   // Obtener las cookies de la solicitud
   const cookieHeader = request.headers.get("cookie");
@@ -105,7 +107,9 @@ export function getCurrentSession(request: NextRequest) {
 export async function signOutUser(
   setLoading: (loading: boolean) => void,
   router: AppRouterInstance,
-  resetSession: () => void
+  resetSession: () => void,
+  resetRequest: () => void,
+  resetUser: () => void
 ) {
   try {
     setLoading(true);
@@ -114,6 +118,8 @@ export async function signOutUser(
 
     // Limpiar el estado de sesión en Zustand
     resetSession();
+    resetRequest();
+    resetUser();
 
     // Eliminar el token de las cookies
     document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";

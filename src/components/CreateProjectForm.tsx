@@ -14,10 +14,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSessionStore } from "@/store/sessionStore";
 import { createProjectWithFiles } from "@/lib/request";
+import { toast } from "sonner";
 
 // Esquema de validación con Zod
 const formSchema = z.object({
@@ -31,7 +31,6 @@ const formSchema = z.object({
 
 export default function CreateProjectForm() {
   const user = useSessionStore((state) => state.user);
-  const router = useRouter();
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -48,16 +47,15 @@ export default function CreateProjectForm() {
     try {
       if (!user?.id) throw new Error("Usuario no autenticado");
 
-      await createProjectWithFiles({
+      const createdProject = await createProjectWithFiles({
         title: values.title,
         description: values.description,
-        userId: user.id,
+        clientId: user.id,
         files,
       });
-
-      router.push("/projects");
+      console.log("createdProject", createdProject);
     } catch (error: any) {
-      alert(error.message || "Error al crear proyecto");
+      toast.error(error.message || "Error al crear proyecto");
     } finally {
       setLoading(false);
     }

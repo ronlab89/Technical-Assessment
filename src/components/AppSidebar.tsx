@@ -17,6 +17,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Loader from "./Loader";
 import { signOutUser } from "@/lib/auth";
+import { useRequestStore } from "@/store/requestStore";
+import { useUserStore } from "@/store/usersStore";
 
 // Menu items.
 const items = [
@@ -35,6 +37,8 @@ const items = [
 const AppSidebar = () => {
   const router = useRouter();
   const resetSession = useSessionStore((state) => state.resetSession);
+  const resetRequest = useRequestStore((state) => state.resetRequest);
+  const resetUser = useUserStore((state) => state.resetUser);
   const [loading, setLoading] = useState<boolean>(false);
 
   return (
@@ -64,7 +68,15 @@ const AppSidebar = () => {
         <SidebarFooter className="mt-auto">
           <Button
             type="button"
-            onClick={() => signOutUser(setLoading, router, resetSession)}
+            onClick={() =>
+              signOutUser(
+                setLoading,
+                router,
+                resetSession,
+                resetRequest,
+                resetUser
+              )
+            }
             className="w-full mt-0 cursor-pointer"
           >
             Cerrar sesión

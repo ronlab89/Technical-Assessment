@@ -21,21 +21,25 @@ import { useRouter } from "next/navigation";
 import { useSessionStore } from "@/store/sessionStore";
 import { useState } from "react";
 import Loader from "./Loader";
+import { useRequestStore } from "@/store/requestStore";
+import { useUserStore } from "@/store/usersStore";
 
 const UserNav = () => {
   const user = useSessionStore((state) => state.user);
   const profile = useSessionStore((state) => state.profile);
+  const resetSession = useSessionStore((state) => state.resetSession);
+  const resetRequest = useRequestStore((state) => state.resetRequest);
+  const resetUser = useUserStore((state) => state.resetUser);
+  const { isMobile } = useSidebar();
+  const router = useRouter();
 
+  const [loading, setLoading] = useState<boolean>(false);
   const roles = {
     client: "Cliente",
     pm: "Project Manager",
     designer: "Diseñador",
   };
-  const { isMobile } = useSidebar();
 
-  const router = useRouter();
-  const resetSession = useSessionStore((state) => state.resetSession);
-  const [loading, setLoading] = useState<boolean>(false);
   return (
     <>
       <SidebarMenu>
@@ -82,7 +86,15 @@ const UserNav = () => {
                 <LogOut />
                 <span
                   className="cursor-pointer"
-                  onClick={() => signOutUser(setLoading, router, resetSession)}
+                  onClick={() =>
+                    signOutUser(
+                      setLoading,
+                      router,
+                      resetSession,
+                      resetRequest,
+                      resetUser
+                    )
+                  }
                 >
                   Cerrar sesión
                 </span>
