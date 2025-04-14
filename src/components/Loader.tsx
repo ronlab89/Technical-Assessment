@@ -1,4 +1,5 @@
 "use client";
+
 import "@/assets/css/loader.css";
 
 interface LoaderProps {

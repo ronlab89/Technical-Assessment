@@ -1,4 +1,7 @@
 "use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -10,15 +13,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import Loader from "@/components/Loader";
 import { Inbox, Settings } from "lucide-react";
-import { Button } from "./ui/button";
 import { useSessionStore } from "@/store/sessionStore";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import Loader from "./Loader";
-import { signOutUser } from "@/lib/auth";
 import { useRequestStore } from "@/store/requestStore";
 import { useUserStore } from "@/store/usersStore";
+import { signOutUser } from "@/lib/auth";
 
 // Menu items.
 const items = [

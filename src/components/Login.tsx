@@ -1,8 +1,12 @@
 "use client";
-import { z } from "zod";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -18,22 +22,19 @@ import {
   FormMessage,
   FormLabel,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import Loader from "@/components/Loader";
 import { useSessionStore } from "@/store/sessionStore";
-import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/auth";
-import { useState } from "react";
-import Loader from "./Loader";
 
 const formSchema = z.object({
   email: z
-    .string({ required_error: "El correo es obligatorio" }) // Campo obligatorio
-    .min(1, { message: "El correo es obligatorio" }) // Campo obligatorio
-    .email({ message: "Correo inválido" }), // Formato de correo válido
+    .string({ required_error: "El correo es obligatorio" })
+    .min(1, { message: "El correo es obligatorio" })
+    .email({ message: "Correo inválido" }),
   password: z
-    .string({ required_error: "La contraseña es obligatoria" }) // Campo obligatorio
-    .min(1, { message: "La contraseña es obligatoria" }) // Campo obligatorio
-    .min(8, { message: "La contraseña debe tener al menos 8 caracteres" }), // Mínimo 8 caracteres
+    .string({ required_error: "La contraseña es obligatoria" })
+    .min(1, { message: "La contraseña es obligatoria" })
+    .min(8, { message: "La contraseña debe tener al menos 8 caracteres" }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -110,7 +111,6 @@ const Login = () => {
                   </FormItem>
                 )}
               />
-
               <Button type="submit" className="w-full mt-5 cursor-pointer">
                 Iniciar sesión
               </Button>

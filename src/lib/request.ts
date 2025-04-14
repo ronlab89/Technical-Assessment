@@ -16,6 +16,14 @@ type AssignDesignerPayload = {
   designerId: string | null;
 };
 
+/**
+ * The function `getAllRequests` retrieves projects based on the user's profile type (pm, client,
+ * designer) and sets them in the state while handling loading states and errors.
+ * @param  - The `getAllRequests` function is an asynchronous function that retrieves requests based on
+ * the user's profile and session ID. Here's an explanation of the parameters:
+ * @returns In the `getAllRequests` function, the `setRequests(projects)` is being returned when the
+ * projects are successfully fetched based on the user's profile type (pm, client, designer).
+ */
 const getAllRequests = async ({
   setLoading,
   setRequests,
@@ -38,12 +46,11 @@ const getAllRequests = async ({
         );
 
       if (error) {
-        console.error("Error al obtener los proyectos:", error);
+        // console.error("Error al obtener los proyectos:", error);
         toast.error("Error al obtener los proyectos");
         setLoading(false);
         return;
       } else {
-        // console.log("Proyectos encontrados:", projects);
         return setRequests(projects);
       }
     }
@@ -57,7 +64,7 @@ const getAllRequests = async ({
         .eq("client_id", sessionId);
 
       if (error) {
-        console.error("Error al obtener los proyectos:", error);
+        // console.error("Error al obtener los proyectos:", error);
         toast.error("Error al obtener los proyectos");
         setLoading(false);
         return;
@@ -76,7 +83,7 @@ const getAllRequests = async ({
         .eq("designer_id", sessionId);
 
       if (error) {
-        console.error("Error al obtener los proyectos:", error);
+        // console.error("Error al obtener los proyectos:", error);
         toast.error("Error al obtener los proyectos");
         setLoading(false);
         return;
@@ -86,19 +93,27 @@ const getAllRequests = async ({
       }
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   } finally {
     setLoading(false);
   }
 };
 
+/**
+ * The function `createProjectWithFiles` uploads files to storage and creates a project with the
+ * uploaded files in a database.
+ * @param {CreateProjectParams}  - The `createProjectWithFiles` function is an asynchronous function
+ * that takes in an object with the following parameters:
+ * @returns The function `createProjectWithFiles` returns an object that includes the project data and
+ * the uploaded files. The structure of the returned object includes the project details such as title,
+ * description, client_id, and an array of files with their name, path, and public URL.
+ */
 const createProjectWithFiles = async ({
   title,
   description,
   clientId,
   files,
 }: CreateProjectParams) => {
-  // Subimos los archivos al storage
   const uploadedFiles = [];
 
   for (const file of files) {
@@ -120,9 +135,7 @@ const createProjectWithFiles = async ({
       url: publicUrl,
     });
   }
-  console.log("uploadedFiles", uploadedFiles);
 
-  //Creamos el proyecto con los archivos subidos
   const { data: project, error: createError } = await supabase
     .from("projects")
     .insert([{ title, description, client_id: clientId, files: uploadedFiles }])
@@ -130,7 +143,7 @@ const createProjectWithFiles = async ({
     .single();
 
   if (createError) {
-    console.log("Error al crear el proyecto: ", createError);
+    // console.log("Error al crear el proyecto: ", createError);
     toast.error("Error al crear el proyecto");
     return;
   }
@@ -143,6 +156,16 @@ const createProjectWithFiles = async ({
   };
 };
 
+/**
+ * The function `assignDesigner` updates a project with a new designer and returns the updated project
+ * details.
+ * @param {AssignDesignerPayload}  - The `assignDesigner` function is an asynchronous function that
+ * takes in an object with two properties: `projectId` and `designerId`. These properties are used to
+ * update a project in a database with the specified designer ID and update the `updated_at` field with
+ * the current date and time.
+ * @returns The `assignDesigner` function is returning the `designerProject` data object after updating
+ * the designer for a specific project.
+ */
 export const assignDesigner = async ({
   projectId,
   designerId,
@@ -170,8 +193,18 @@ export const assignDesigner = async ({
   return designerProject;
 };
 
+/**
+ * The `deleteProject` function deletes a project from a database along with its associated files from
+ * storage.
+ * @param {string} projectId - The `projectId` parameter in the `deleteProject` function is a string
+ * that represents the unique identifier of the project that needs to be deleted. This identifier is
+ * used to fetch the project details from the database, including the list of files associated with the
+ * project that need to be deleted.
+ * @returns The `deleteProject` function returns the deleted project data if successful, or it throws
+ * an error message if there was an error during the deletion process. If the deletion is successful,
+ * it also displays a success message using a toast notification.
+ */
 const deleteProject = async (projectId: string) => {
-  // Obtener lista de archivos para borrar del storage
   const { data: project, error: fetchError } = await supabase
     .from("projects")
     .select("files")

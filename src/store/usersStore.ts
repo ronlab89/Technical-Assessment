@@ -30,7 +30,6 @@ export const useUserStore = create<UserStore>()(
       ...initialState,
 
       setUsers: (data) => set({ users: data }),
-
       resetUser: () => set(initialState),
     }),
     {

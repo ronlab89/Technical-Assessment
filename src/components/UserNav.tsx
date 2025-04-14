@@ -1,6 +1,7 @@
 "use client";
 
-import { LogOut, Mail, ShieldUser, User } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -16,13 +17,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { signOutUser } from "@/lib/auth";
-import { useRouter } from "next/navigation";
+import Loader from "@/components/Loader";
+import { LogOut, Mail, ShieldUser, User } from "lucide-react";
 import { useSessionStore } from "@/store/sessionStore";
-import { useState } from "react";
-import Loader from "./Loader";
 import { useRequestStore } from "@/store/requestStore";
 import { useUserStore } from "@/store/usersStore";
+import { signOutUser } from "@/lib/auth";
 
 const UserNav = () => {
   const user = useSessionStore((state) => state.user);
@@ -50,9 +50,12 @@ const UserNav = () => {
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
-                <Avatar className="h-8 w-8 rounded-lg cursor-pointer">
+                <Avatar
+                  aria-label="User avatar"
+                  className="h-8 w-8 rounded-lg cursor-pointer"
+                >
                   <AvatarFallback className="rounded-lg">
-                    <User />
+                    <User id="user-avatar" aria-label="User avatar" />
                   </AvatarFallback>
                 </Avatar>
               </SidebarMenuButton>

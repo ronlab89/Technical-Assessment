@@ -1,7 +1,11 @@
-import { useSessionStore } from "@/store/sessionStore";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import AssingDesigner from "@/components/AssingDesigner";
 import { PencilRuler } from "lucide-react";
-import AssingDesigner from "./AssingDesigner";
+import { useSessionStore } from "@/store/sessionStore";
 
 type ProjectWithOptionalDesigner = {
   id: string;
@@ -28,7 +32,10 @@ const DesignerCell = ({
       {profile?.role === "pm" && (
         <Popover>
           <PopoverTrigger>
-            <PencilRuler className="w-[16px] cursor-pointer" />
+            <PencilRuler
+              aria-label="Toggle for assigning designer"
+              className="w-[16px] cursor-pointer"
+            />
           </PopoverTrigger>
           <PopoverContent>
             <AssingDesigner projectId={project.id} />

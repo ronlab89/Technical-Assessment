@@ -1,11 +1,11 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import DesignerCell from "@/components/DesignerCell";
+import ActionsCell from "@/components/ActionsCell";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
 import localizedFormat from "dayjs/plugin/localizedFormat";
-import DesignerCell from "@/components/DesignerCell";
-import ActionsCell from "@/components/ActionsCell";
 
 dayjs.extend(localizedFormat);
 

@@ -45,7 +45,6 @@ export const useSessionStore = create<SessionStore>()(
       setSession: (session) => set({ session }),
       setUser: (user) => set({ user }),
       setProfile: (profile) => set({ profile }),
-
       resetSession: () => set(initialState),
     }),
     {

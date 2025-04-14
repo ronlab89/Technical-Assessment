@@ -1,9 +1,13 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -12,15 +16,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
 import { useSessionStore } from "@/store/sessionStore";
-import { createProjectWithFiles } from "@/lib/request";
-import { toast } from "sonner";
 import { useRequestStore } from "@/store/requestStore";
+import { createProjectWithFiles } from "@/lib/request";
 
-// Esquema de validación con Zod
 const formSchema = z.object({
   title: z
     .string({ required_error: "El título es obligatorio" })
@@ -36,7 +35,7 @@ export default function CreateProjectForm() {
   const user = useSessionStore((state) => state.user);
   const requests = useRequestStore((state) => state.requests);
   const setRequests = useRequestStore((state) => state.setRequests);
-
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -59,8 +58,14 @@ export default function CreateProjectForm() {
         clientId: user.id,
         files,
       });
-      console.log("createdProject", createdProject);
       setRequests([...(requests || []), createdProject]);
+      // Limpiar el form
+      form.reset();
+      // Limpiar el input de archivos
+      setFiles([]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message || "Error al crear proyecto");
@@ -92,7 +97,6 @@ export default function CreateProjectForm() {
             </FormItem>
           )}
         />
-
         {/* Campo de Descripción */}
         <FormField
           control={form.control}
@@ -107,7 +111,6 @@ export default function CreateProjectForm() {
             </FormItem>
           )}
         />
-
         {/* Campo de Archivos */}
         <FormItem>
           <FormLabel>Archivos adjuntos</FormLabel>
@@ -115,6 +118,7 @@ export default function CreateProjectForm() {
             <Input
               type="file"
               multiple
+              ref={fileInputRef}
               onChange={(e) => setFiles(Array.from(e.target.files || []))}
               className="cursor-pointer"
             />
@@ -132,7 +136,6 @@ export default function CreateProjectForm() {
             </ul>
           )}
         </FormItem>
-
         {/* Botón de Envío */}
         <Button
           type="submit"
