@@ -1,21 +1,17 @@
 import { ReactNode } from "react";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Poppins } from "next/font/google";
 import AppSidebar from "@/components/AppSidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["400", "500", "700", "900"],
 });
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <main className={`${geistSans.variable} ${geistMono.variable}`}>
+    <main className={`${poppins.variable}`}>
       <SidebarProvider>
         <AppSidebar />
         <SidebarTrigger />

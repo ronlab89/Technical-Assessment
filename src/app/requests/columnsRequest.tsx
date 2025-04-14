@@ -11,7 +11,12 @@ import { deleteProject } from "@/lib/request";
 import { useRequestStore } from "@/store/requestStore";
 import { useSessionStore } from "@/store/sessionStore";
 import { ColumnDef } from "@tanstack/react-table";
-import { FilePenLine, FileX2, PencilRuler } from "lucide-react";
+import { FileX2, PencilRuler } from "lucide-react";
+import dayjs from "dayjs";
+import "dayjs/locale/es";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+
+dayjs.extend(localizedFormat);
 
 export type Request = {
   id: string;
@@ -75,10 +80,18 @@ export const columnsRequest: ColumnDef<Request>[] = [
   {
     accessorKey: "created_at",
     header: "Fecha de creación",
+    cell: ({ row }) => {
+      const date = row.original.created_at;
+      return date ? dayjs(date).locale("es").format("LLL") : "";
+    },
   },
   {
     accessorKey: "updated_at",
     header: "Fecha de actualización",
+    cell: ({ row }) => {
+      const date = row.original.updated_at;
+      return date ? dayjs(date).locale("es").format("LLL") : "";
+    },
   },
   {
     id: "actions",

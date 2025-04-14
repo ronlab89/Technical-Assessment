@@ -25,9 +25,18 @@ import { loginUser } from "@/lib/auth";
 import { useState } from "react";
 import Loader from "./Loader";
 
+// const formSchema = z.object({
+//   email: z.string().email({ message: "Correo inválido" }),
+//   password: z.string().min(6, { message: "Mínimo 6 caracteres" }),
+// });
+
 const formSchema = z.object({
-  email: z.string().email({ message: "Correo inválido" }),
-  password: z.string().min(6, { message: "Mínimo 6 caracteres" }),
+  email: z
+    .string({ required_error: "El correo es obligatorio" }) // Campo obligatorio
+    .email({ message: "Correo inválido" }), // Formato de correo válido
+  password: z
+    .string({ required_error: "La contraseña es obligatoria" }) // Campo obligatorio
+    .min(8, { message: "La contraseña debe tener al menos 8 caracteres" }), // Mínimo 8 caracteres
 });
 
 type FormValues = z.infer<typeof formSchema>;
