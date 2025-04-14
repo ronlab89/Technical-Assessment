@@ -26,13 +26,26 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
+  const profile = useSessionStore((state) => state.profile);
+
+  const hiddenColumnsByRole: Record<string, string[]> = {
+    client: ["client", "designer"], // Oculta estas columnas para 'client'
+    designer: [], // Por ahora no oculta nada para 'designer'
+    pm: [], // Project manager ve todo
+  };
+
+  // 🔍 Filtramos las columnas dependiendo del rol del usuario
+  const filteredColumns = columns.filter((col) => {
+    const colId = col.id;
+    const hiddenForRole = hiddenColumnsByRole[profile?.role || ""] || [];
+    return !hiddenForRole.includes(colId as string);
   });
 
-  const profile = useSessionStore((state) => state.profile);
+  const table = useReactTable({
+    data,
+    columns: filteredColumns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
     <div className="rounded-md border">

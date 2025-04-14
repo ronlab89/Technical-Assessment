@@ -14,7 +14,14 @@ export type Request = {
   title: string;
   description: string;
   client_id: string;
+  client?: {
+    full_name: string;
+  };
   designer_id: string;
+  designer?: {
+    full_name: string;
+    email: string;
+  };
   files: string | string[] | null | undefined;
   created_at: string;
   updated_at: string;
@@ -22,23 +29,29 @@ export type Request = {
 
 export const columnsRequest: ColumnDef<Request>[] = [
   {
+    id: "title",
     accessorKey: "title",
     header: "Titulo",
   },
   {
+    id: "description",
     accessorKey: "description",
     header: "Descripción",
   },
   {
-    accessorKey: "client.full_name",
+    id: "client",
+    accessorKey: "client",
     header: "cliente",
+    cell: ({ row }) => <span>{row.original?.client?.full_name}</span>,
   },
   {
+    id: "designer",
     accessorKey: "designer",
     header: "diseñador",
     cell: ({ row }) => <DesignerCell project={row.original} />,
   },
   {
+    id: "files",
     accessorKey: "files",
     header: "Archivos",
     cell: ({ row }) =>
@@ -47,6 +60,7 @@ export const columnsRequest: ColumnDef<Request>[] = [
         : (row.getValue("files") as string).length,
   },
   {
+    id: "created_at",
     accessorKey: "created_at",
     header: "Fecha de creación",
     cell: ({ row }) => {
@@ -55,6 +69,7 @@ export const columnsRequest: ColumnDef<Request>[] = [
     },
   },
   {
+    id: "updated_at",
     accessorKey: "updated_at",
     header: "Fecha de actualización",
     cell: ({ row }) => {
