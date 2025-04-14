@@ -19,6 +19,7 @@ import { useRequestStore } from "@/store/requestStore";
 import Loader from "@/components/Loader";
 import { getAllDesigners } from "@/lib/users";
 import { useUserStore } from "@/store/usersStore";
+import { FolderKanban } from "lucide-react";
 
 const Page = () => {
   const profile = useSessionStore((state) => state.profile);
@@ -65,7 +66,7 @@ const Page = () => {
   }, [requests]);
 
   return (
-    <section className="flex w-[81.5vw] min-h-screen flex-col items-start justify-start relative px-[40px]">
+    <section className="flex w-full min-h-screen flex-col items-start justify-start relative px-[40px]">
       <article className="absolute top-0 right-[20px]">
         <UserNav />
       </article>
@@ -82,8 +83,10 @@ const Page = () => {
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
-                <DialogTitle>Proyecto</DialogTitle>
-                <DialogDescription>
+                <DialogTitle className="flex items-center gap-2">
+                  <FolderKanban /> Proyecto
+                </DialogTitle>
+                <DialogDescription className="font-medium">
                   Completa los campos para crear un nuevo proyecto.
                 </DialogDescription>
               </DialogHeader>

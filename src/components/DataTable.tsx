@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useSessionStore } from "@/store/sessionStore";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -30,6 +31,8 @@ export function DataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  const profile = useSessionStore((state) => state.profile);
 
   return (
     <div className="rounded-md border">
@@ -69,7 +72,11 @@ export function DataTable<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No se encontraron datos.
+                {profile?.role === "designer"
+                  ? "Aun no tienes proyectos asignados."
+                  : profile?.role === "client"
+                  ? "No tienes proyectos creados."
+                  : "No se encontraron proyectos."}
               </TableCell>
             </TableRow>
           )}

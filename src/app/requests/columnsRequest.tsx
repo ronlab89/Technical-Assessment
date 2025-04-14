@@ -58,7 +58,7 @@ export const columnsRequest: ColumnDef<Request>[] = [
           {profile?.role === "pm" && (
             <Popover>
               <PopoverTrigger>
-                <PencilRuler className="w-[16px] cursor-pointer hover:text-slate-700" />
+                <PencilRuler className="w-[16px] cursor-pointer" />
               </PopoverTrigger>
               <PopoverContent>
                 <AssingDesigner projectId={project.id} />

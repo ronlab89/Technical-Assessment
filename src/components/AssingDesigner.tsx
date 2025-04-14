@@ -74,6 +74,7 @@ const AssingDesigner = ({ projectId }: { projectId: string }) => {
                 ...project,
                 designer_id: assigned.designer_id,
                 designer: assigned.designer,
+                updated_at: new Date().toISOString(),
               }
             : project
         ) || [];

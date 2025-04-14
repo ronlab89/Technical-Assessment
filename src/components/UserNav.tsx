@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, User } from "lucide-react";
+import { LogOut, Mail, ShieldUser, User } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -50,7 +50,7 @@ const UserNav = () => {
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
-                <Avatar className="h-8 w-8 rounded-lg">
+                <Avatar className="h-8 w-8 rounded-lg cursor-pointer">
                   <AvatarFallback className="rounded-lg">
                     <User />
                   </AvatarFallback>
@@ -66,38 +66,43 @@ const UserNav = () => {
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">
+                    <p className="truncate font-semibold mb-2">
                       {user?.full_name}
-                    </span>
-                    <span className="truncate text-xs">
-                      Email: {user?.email}
-                    </span>
-                    <span className="truncate text-xs">
-                      Perfil:{" "}
-                      {profile?.role
-                        ? roles[profile.role as keyof typeof roles]
-                        : "Role not assigned"}
-                    </span>
+                    </p>
+                    <p className="truncate text-xs flex flex-col mb-2">
+                      <span className="font-medium flex justify-start items-center gap-x-1">
+                        <Mail className="w-3.5" /> Email{" "}
+                      </span>
+                      <span>{user?.email}</span>
+                    </p>
+                    <p className="truncate text-xs flex flex-col mb-2">
+                      <span className="font-medium flex justify-start items-center gap-x-1">
+                        <ShieldUser className="w-3.5" /> Perfil{" "}
+                      </span>
+                      <span>
+                        {profile?.role
+                          ? roles[profile.role as keyof typeof roles]
+                          : "Role not assigned"}
+                      </span>
+                    </p>
                   </div>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() =>
+                  signOutUser(
+                    setLoading,
+                    router,
+                    resetSession,
+                    resetRequest,
+                    resetUser
+                  )
+                }
+              >
                 <LogOut />
-                <span
-                  className="cursor-pointer"
-                  onClick={() =>
-                    signOutUser(
-                      setLoading,
-                      router,
-                      resetSession,
-                      resetRequest,
-                      resetUser
-                    )
-                  }
-                >
-                  Cerrar sesión
-                </span>
+                <span className="cursor-pointer">Cerrar sesión</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

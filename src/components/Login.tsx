@@ -3,7 +3,6 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -17,6 +16,7 @@ import {
   FormItem,
   FormControl,
   FormMessage,
+  FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useSessionStore } from "@/store/sessionStore";
@@ -25,17 +25,14 @@ import { loginUser } from "@/lib/auth";
 import { useState } from "react";
 import Loader from "./Loader";
 
-// const formSchema = z.object({
-//   email: z.string().email({ message: "Correo inválido" }),
-//   password: z.string().min(6, { message: "Mínimo 6 caracteres" }),
-// });
-
 const formSchema = z.object({
   email: z
     .string({ required_error: "El correo es obligatorio" }) // Campo obligatorio
+    .min(1, { message: "El correo es obligatorio" }) // Campo obligatorio
     .email({ message: "Correo inválido" }), // Formato de correo válido
   password: z
     .string({ required_error: "La contraseña es obligatoria" }) // Campo obligatorio
+    .min(1, { message: "La contraseña es obligatoria" }) // Campo obligatorio
     .min(8, { message: "La contraseña debe tener al menos 8 caracteres" }), // Mínimo 8 caracteres
 });
 
@@ -81,14 +78,14 @@ const Login = () => {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="flex flex-col space-y-2"
+              className="flex flex-col space-y-5"
             >
-              <Label htmlFor="email">Correo electrónico</Label>
               <FormField
                 control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>Correo electrónico</FormLabel>
                     <FormControl>
                       <Input placeholder="user@example.com" {...field} />
                     </FormControl>
@@ -96,14 +93,12 @@ const Login = () => {
                   </FormItem>
                 )}
               />
-              <Label htmlFor="password" className="mt-5">
-                Contraseña
-              </Label>
               <FormField
                 control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
+                    <FormLabel>Contraseña</FormLabel>
                     <FormControl>
                       <Input
                         type="password"

@@ -14,7 +14,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     <main className={`${poppins.variable}`}>
       <SidebarProvider>
         <AppSidebar />
-        <SidebarTrigger />
+        <SidebarTrigger className="cursor-pointer" />
         <section className="w-screen max-w-screen h-screen overflow-hidden relative">
           {children}
         </section>

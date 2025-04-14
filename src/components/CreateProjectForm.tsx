@@ -23,10 +23,12 @@ import { useRequestStore } from "@/store/requestStore";
 // Esquema de validación con Zod
 const formSchema = z.object({
   title: z
-    .string()
-    .min(2, { message: "El título debe tener al menos 2 caracteres" }),
+    .string({ required_error: "El título es obligatorio" })
+    .min(1, { message: "El título es obligatorio" })
+    .min(3, { message: "El título debe tener al menos 3 caracteres" }),
   description: z
-    .string()
+    .string({ required_error: "La descripción es obligatoria" })
+    .min(1, { message: "La descripción es obligatoria" })
     .min(10, { message: "La descripción debe tener al menos 10 caracteres" }),
 });
 
@@ -120,7 +122,12 @@ export default function CreateProjectForm() {
           {files.length > 0 && (
             <ul className="text-sm text-muted-foreground mt-2">
               {files.map((f) => (
-                <li key={f.name}>📎 {f.name}</li>
+                <li
+                  key={f.name}
+                  className="flex justify-start items-center gap-1"
+                >
+                  <span>📎 {f.name}</span>
+                </li>
               ))}
             </ul>
           )}
