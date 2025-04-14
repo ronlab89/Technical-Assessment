@@ -8,16 +8,13 @@ import {
   Form,
   FormControl,
   FormDescription,
-  // FormField,
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
-import { toast } from "sonner";
 import { useUserStore } from "@/store/usersStore";
 import { assignDesigner } from "@/lib/request";
 import { useRequestStore } from "@/store/requestStore";
-// import { Button } from "@/components/ui/button"; // Asegurate de tener un botón de submit
 
 const FormSchema = z.object({
   security_emails: z.boolean(),
@@ -33,10 +30,6 @@ const AssingDesigner = ({ projectId }: { projectId: string }) => {
   const setSelectedDesignerId = useRequestStore(
     (state) => state.setSelectedDesignerId
   );
-
-  // const [selectedDesignerId, setSelectedDesignerId] = useState<string | null>(
-  //   null
-  // );
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -65,8 +58,6 @@ const AssingDesigner = ({ projectId }: { projectId: string }) => {
     const assigned = await assignDesigner({ projectId, designerId: newValue });
 
     if (assigned) {
-      toast.success("Diseñador asignado");
-
       const updatedProjects =
         requests?.map((project) =>
           project.id === projectId
@@ -127,8 +118,6 @@ const AssingDesigner = ({ projectId }: { projectId: string }) => {
             })
           )}
         </div>
-
-        {/* <Button type="submit">Guardar asignación</Button> */}
       </form>
     </Form>
   );

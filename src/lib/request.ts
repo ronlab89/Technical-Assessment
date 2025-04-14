@@ -11,6 +11,11 @@ type CreateProjectParams = {
   files: FileInput;
 };
 
+type AssignDesignerPayload = {
+  projectId: string;
+  designerId: string | null;
+};
+
 const getAllRequests = async ({
   setLoading,
   setRequests,
@@ -138,11 +143,6 @@ const createProjectWithFiles = async ({
   };
 };
 
-type AssignDesignerPayload = {
-  projectId: string;
-  designerId: string | null;
-};
-
 export const assignDesigner = async ({
   projectId,
   designerId,
@@ -197,7 +197,7 @@ const deleteProject = async (projectId: string) => {
     .select();
 
   if (deleteError) return toast.error(deleteError.message);
-  toast.success("Proyecto eliminado con éxito");
+  toast.success("Proyecto eliminado.");
   return deletedProject;
 };
 

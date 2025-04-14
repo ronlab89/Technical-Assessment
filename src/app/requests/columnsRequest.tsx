@@ -1,20 +1,11 @@
 "use client";
 
-import AssingDesigner from "@/components/AssingDesigner";
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { deleteProject } from "@/lib/request";
-import { useRequestStore } from "@/store/requestStore";
-import { useSessionStore } from "@/store/sessionStore";
 import { ColumnDef } from "@tanstack/react-table";
-import { FileX2, PencilRuler } from "lucide-react";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
 import localizedFormat from "dayjs/plugin/localizedFormat";
+import DesignerCell from "@/components/DesignerCell";
+import ActionsCell from "@/components/ActionsCell";
 
 dayjs.extend(localizedFormat);
 
@@ -45,29 +36,7 @@ export const columnsRequest: ColumnDef<Request>[] = [
   {
     accessorKey: "designer",
     header: "diseñador",
-    cell: ({ row }) => {
-      const profile = useSessionStore((state) => state.profile);
-      const project = row.original;
-      return (
-        <div className="flex items-center gap-2">
-          <span>
-            {project.designer_id !== null
-              ? `Asignado a: ${project?.designer?.full_name}`
-              : "Sin asignar"}
-          </span>
-          {profile?.role === "pm" && (
-            <Popover>
-              <PopoverTrigger>
-                <PencilRuler className="w-[16px] cursor-pointer" />
-              </PopoverTrigger>
-              <PopoverContent>
-                <AssingDesigner projectId={project.id} />
-              </PopoverContent>
-            </Popover>
-          )}
-        </div>
-      );
-    },
+    cell: ({ row }) => <DesignerCell project={row.original} />,
   },
   {
     accessorKey: "files",
@@ -95,46 +64,6 @@ export const columnsRequest: ColumnDef<Request>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
-      const profile = useSessionStore((state) => state.profile);
-      const requests = useRequestStore((state) => state.requests);
-      const setRequests = useRequestStore((state) => state.setRequests);
-      const project = row.original;
-      return (
-        <>
-          {profile?.role === "pm" && (
-            <div className="flex items-center gap-2">
-              {/* <FilePenLine className="w-[16px] cursor-pointer hover:text-slate-700" /> */}
-              <Popover>
-                <PopoverTrigger>
-                  <FileX2 className="w-[16px] cursor-pointer hover:text-slate-700" />
-                </PopoverTrigger>
-                <PopoverContent className="w-fit">
-                  <span className="text-xs text-balance block mb-2 w-fit">
-                    ¿Estás seguro de que quieres eliminar este proyecto?
-                  </span>
-                  <Button
-                    onClick={() => {
-                      deleteProject(project.id).then((deletedProject) => {
-                        if (deletedProject) {
-                          const updatedRequests = requests
-                            ? requests.filter((req) => req.id !== project.id)
-                            : [];
-                          setRequests(updatedRequests);
-                        }
-                      });
-                    }}
-                    variant="destructive"
-                    className="w-fit cursor-pointer"
-                  >
-                    Eliminar
-                  </Button>
-                </PopoverContent>
-              </Popover>
-            </div>
-          )}
-        </>
-      );
-    },
+    cell: ({ row }) => <ActionsCell project={row.original} />,
   },
 ];
