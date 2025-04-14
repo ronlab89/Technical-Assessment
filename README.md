@@ -11,7 +11,7 @@ Puedes iniciar sesión con cualquiera de los siguientes usuarios para probar la 
 | Rol             | Correo            | Contraseña |
 | --------------- | ----------------- | ---------- |
 | Project Manager | pm@test.com       | test2025\* |
-| Cliente         | client@test.com   | test2025\* |
+| Cliente         | cliente@test.com  | test2025\* |
 | Diseñador       | designer@test.com | test2025\* |
 
 > Todos los usuarios son ficticios y fueron creados para efectos de demostración.
